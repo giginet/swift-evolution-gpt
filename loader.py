@@ -18,14 +18,14 @@ class DirectoryIndexLoader:
 
     def load(self) -> IndexType:
         service_context = ServiceContext.from_defaults(llm=self.llm)
-        documents = SimpleDirectoryReader().load_data()
+        documents = SimpleDirectoryReader(self.directory_path).load_data()
 
         if not os.path.exists(self.cache_path):
-            logging.info("No caches found. Learning from scratch")
+            print("No caches found. Learning from scratch")
             index = GPTVectorStoreIndex.from_documents(documents, service_context=service_context)
-            index.storage_context.persist()
+            index.storage_context.persist(self.cache_path)
         else:
-            logging.info("Learned caches found. Loading from caches")
+            print("Learned caches found. Loading from caches")
             storage_context = StorageContext.from_defaults(persist_dir=self.cache_path)
             index = load_index_from_storage(storage_context)
         return index
