@@ -1,5 +1,5 @@
 from llama_index import SimpleDirectoryReader, GPTVectorStoreIndex, ServiceContext, StorageContext, \
-    load_index_from_storage
+    load_index_from_storage, LLMPredictor, OpenAIEmbedding
 from llama_index.indices.base import IndexType
 from llama_index.llms import OpenAI
 
@@ -17,7 +17,12 @@ class DirectoryIndexLoader:
         self.llm = OpenAI(temperature=0.1, model='gpt-4')
 
     def load(self) -> IndexType:
-        service_context = ServiceContext.from_defaults(llm=self.llm)
+        embed_model = OpenAIEmbedding(model="text-embedding-ada-002")
+        predictor = LLMPredictor(llm=self.llm)
+        service_context = ServiceContext.from_defaults(
+            embed_model=embed_model,
+            llm_predictor=predictor
+        )
         documents = SimpleDirectoryReader(self.directory_path).load_data()
 
         if not os.path.exists(self.cache_path):

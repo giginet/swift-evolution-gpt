@@ -9,7 +9,11 @@ if __name__ == '__main__':
     database = os.path.join(os.path.dirname(__file__), 'fixtures', 'light_data')
     engine = SwiftEvolutionEngine(database_path=database)
 
-    answer = engine.ask_to_gpt("Swiftの引数ラベルについて教えてください")
-    print(answer)
+    while True:
+        question = input("User: ")
+        if question == "exit":
+            break
+        answer = engine.ask_to_gpt(question)
+        print("\n")
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
