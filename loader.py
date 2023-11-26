@@ -7,6 +7,10 @@ from llama_index import SimpleDirectoryReader, GPTVectorStoreIndex, ServiceConte
 from llama_index.indices.base import IndexType
 from llama_index.llms import OpenAI
 
+import chromadb
+from llama_index import VectorStoreIndex
+from llama_index.vector_stores import ChromaVectorStore
+
 import os
 import logging
 
@@ -46,12 +50,14 @@ class ProposalsLoader:
             []
         )
 
-        if not os.path.exists(self.cache_path):
-            print("No caches found. Learning from scratch")
-            index = GPTVectorStoreIndex.from_documents(documents, service_context=service_context)
-            index.storage_context.persist(self.cache_path)
-        else:
-            print("Learned caches found. Loading from caches")
-            storage_context = StorageContext.from_defaults(persist_dir=self.cache_path)
-            index = load_index_from_storage(storage_context)
+        db = chromadb.PersistentClient(path="./chroma_db")
+
+        chroma_collection = db.get_or_create_collection("swift-evolution-gpt")
+
+        vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
+        storage_context = StorageContext.from_defaults(vector_store=vector_store)
+
+        index = GPTVectorStoreIndex.from_documents(documents,
+                                                   service_context=service_context,
+                                                   storage_context=storage_context)
         return index

@@ -7,6 +7,7 @@ name = "pypi"
 llama-index = "*"
 html2text = "*"
 python-dotenv = "*"
+chromadb = '*'
 
 [dev-packages]
 
