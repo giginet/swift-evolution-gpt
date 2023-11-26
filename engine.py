@@ -1,3 +1,5 @@
+from typing import Generator
+
 from loader import ProposalsLoader
 
 
@@ -12,10 +14,8 @@ class SwiftEvolutionEngine:
             ),
         )
 
-    def ask_to_gpt(self, prompt):
+    def ask_to_gpt(self, prompt) -> Generator[str, None, None]:
         response = self.chat_engine.stream_chat(prompt)
-        for token in response.response_gen:
-            print(token, end="")
-
+        return response.response_gen
 
 
