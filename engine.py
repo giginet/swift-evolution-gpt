@@ -1,9 +1,9 @@
-from loader import DirectoryIndexLoader
+from loader import ProposalsLoader
 
 
 class SwiftEvolutionEngine:
     def __init__(self, database_path):
-        self.loader = DirectoryIndexLoader(directory_path=database_path)
+        self.loader = ProposalsLoader(directory_path=database_path)
         index = self.loader.load()
         self.chat_engine = index.as_chat_engine(
             chat_mode="best",

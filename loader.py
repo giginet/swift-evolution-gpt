@@ -1,13 +1,19 @@
+from functools import reduce
+from pathlib import Path
+from typing import List
+
 from llama_index import SimpleDirectoryReader, GPTVectorStoreIndex, ServiceContext, StorageContext, \
-    load_index_from_storage, LLMPredictor, OpenAIEmbedding
+    load_index_from_storage, LLMPredictor, OpenAIEmbedding, download_loader, Document
 from llama_index.indices.base import IndexType
 from llama_index.llms import OpenAI
 
 import os
 import logging
 
+from llama_index.readers.file.markdown_reader import MarkdownReader
 
-class DirectoryIndexLoader:
+
+class ProposalsLoader:
     @property
     def cache_path(self) -> str:
         return os.path.join(os.getcwd(), ".caches")
@@ -23,7 +29,22 @@ class DirectoryIndexLoader:
             embed_model=embed_model,
             llm_predictor=predictor
         )
-        documents = SimpleDirectoryReader(self.directory_path).load_data()
+        # documents = SimpleDirectoryReader(self.directory_path).load_data()
+
+        markdown_reader = MarkdownReader()
+        proposals = [os.path.join(self.directory_path, markdown)
+                     for markdown in os.listdir(self.directory_path) if markdown.endswith(".md")]
+
+        def extend_markdowns(list: List[Document], filepath: str) -> List[Document]:
+            docs = markdown_reader.load_data(file=Path(filepath))
+            list.extend(docs)
+            return list
+
+        documents: List[Document] = reduce(
+            extend_markdowns,
+            proposals,
+            []
+        )
 
         if not os.path.exists(self.cache_path):
             print("No caches found. Learning from scratch")

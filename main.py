@@ -6,7 +6,8 @@ import os
 load_dotenv()
 
 if __name__ == '__main__':
-    database = os.path.join(os.path.dirname(__file__), 'fixtures', 'light_data')
+    database = os.path.join(os.path.dirname(__file__), 'swift-evolution', 'proposals')
+
     engine = SwiftEvolutionEngine(database_path=database)
 
     while True:
