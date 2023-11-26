@@ -20,7 +20,7 @@ class ProposalsLoader:
 
     def __init__(self, directory_path: str):
         self.directory_path = directory_path
-        self.llm = OpenAI(model='gpt-4-turbo')
+        self.llm = OpenAI(model='gpt-4-1106-preview')
 
     def load(self) -> IndexType:
         embed_model = OpenAIEmbedding(model="text-embedding-ada-002")
